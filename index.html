@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+   <head>
+    <title>Simcorner - Your Downloads </title>
+      <style>
+      </style>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css">
+      <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+      <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+      <link href="https://cdn.jsdelivr.net/gh/hung1001/font-awesome-pro@4cac1a6/css/all.css" rel="stylesheet" type="text/css" />
+
+   </head>
+   <body style="font-family: 'Inter', sans-serif;" id="bodyID">
+      <div id="app" style="background-color: #F5F5F5;">
+         <div class="col-md-12">
+            <header class="d-flex align-items-center pb-3 mb-5"
+               :style="`border-bottom: 1px solid whitesmoke;`" style="background-color:white;">
+               <a :href="brand_url" class="d-flex align-items-center text-dark text-decoration-none" target="_blank">
+                  <img :src="brand_logo" class="m-1" height="100px" width="200px">
+                  <h4 :style="`color:${brand_name_font_color};vertical-align:center;margin:30px;`">{{brand_name}}</h4>
+               </a>
+            </header>
+            <main>
+               <div class="container">
+                  <div class="row justify-content-center" v-if="file_name">
+                     <div class="col-md-6">
+                        <div class="card" style="border: 0px;" >
+                           <div class="card-header" style="border: 0px;padding:20px; background-color: white;  ">
+                              <p style="color:#333;"><i class="fa fa-file" aria-hidden="true"></i> &nbsp; {{file_name}} </p> 
+                           </div>
+                           <div class="card-body">
+                              <i class="bi bi-file-earmark-arrow-down-fill"></i>
+                              <a class="btn btn-default" style="background-color: #FB904C;color:white;padding:5px;border:1px solid whitesmoke;" :href="file_url"  target="_blank">
+                                <i class="fa fa-download" aria-hidden="true"></i> Download 
+                              </a>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div v-else>
+                    <p class="text-center">File is no longer available for download</p>
+                  </div>
+               </div>
+            </main>
+            <footer class="p-5 my-5 text-muted">
+               &copy;simcorner.com
+            </footer>
+         </div>
+      </div>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.3/axios.min.js"
+         integrity="sha512-L4lHq2JI/GoKsERT8KYa72iCwfSrKYWEyaBxzJeeITM9Lub5vlTj8tufqYk056exhjo2QDEipJrg6zen/DDtoQ=="
+         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+      <script>
+         var app = new Vue({
+           el: '#app',
+           data: {
+             header_background_color: "",
+             header_font_color: "",
+             page_background_color: "",
+             card_background_color: "",
+             card_font_color: "",
+             button_background_color: "",
+             header_message: "Hi, Add Your Greeting Message here",
+             header_message_optional: "Thanks for purchasing the order",
+             button_font_color: "",
+             badge_background_color: "black",
+             badge_font_color: "white",
+             brand_url: "",
+             brand_name: "",
+             brand_logo: "",
+             brand_footer: "",
+             sub_header_font_color: "",
+             fontFamily: '',
+             bodyFontFamily: '',
+             brand_name_font_color: "",
+             file_name: '',
+             file_url: '',
+         
+           },
+           mounted() {
+         
+             const params = new Proxy(new URLSearchParams(window.location.search), {
+               get: (searchParams, prop) => searchParams.get(prop),
+             });
+         
+             //now let's load the data here
+             const store_url = params.store_url;
+             const file_name = params.file_name;
+             const ref = params.ref;
+         
+         
+             fetch(`https://app.sellkite.xyz/api/v1/preview/?store=${store_url}`)
+               .then((response) => response.json())
+               .then((data) => {
+         
+                 console.log("res:", data)
+                 if (data.status == 'success') {
+         
+                   console.log("this is the api call response")
+                   console.log(data.data.page_settings.header_background_color)
+                   this.header_background_color = data.data.page_settings.header_background_color;
+                   this.header_font_color = data.data.page_settings.header_font_color;
+                   this.card_background_color = data.data.page_settings.card_background_color;
+                   this.card_font_color = data.data.page_settings.card_font_color;
+                   this.button_background_color = data.data.page_settings.button_background_color;
+                   this.sub_header_font_color = data.data.page_settings.sub_header_font_color;
+                   this.additionalCSS = data.data.page_settings.additional_css;
+                   this.brand_name_font_color = data.data.page_settings.brand_name_font_color;
+                   this.page_background_color = data.data.page_settings.page_background_color;
+         
+                   this.header_message = data.data.page_settings.header_message;
+         
+                   this.header_message_optional = data.data.page_settings.header_message_optional;
+                   this.button_font_color = data.data.page_settings.button_font_color;
+                   this.badge_background_color = data.data.page_settings.badge_background_color;
+                   this.badge_font_color = data.data.page_settings.badge_font_color;
+         
+                   this.brand_logo = data.data.email_settings.company_logo;
+                   this.brand_name = data.data.email_settings.company_brand;
+                   this.brand_url = '/';
+                   this.fontFamily = data.data.page_settings.fontFamily.trim().split(' ').join('+')
+                   this.bodyFontFamily = data.data.page_settings.fontFamily.trim()
+                   this.brand_footer = data.data.email_settings.email_footer;
+         
+         
+                   this.getOrderDownloads(store_url, file_name)
+         
+         
+                 }
+               });
+         
+         
+           },
+           methods: {
+             getOrderDownloads: function (shop_url, file_name) {
+               return fetch(`https://app.sellkite.xyz/api/v1/get-file-by-name?&store_url=${shop_url}&file_display_name=${file_name}`, {
+                 method: "GET",
+                 headers: {
+                   "Content-Type": "application/json"
+                 }
+               })
+                 .then(response => response.json())
+                 .then((data) => {
+                   if (data.status === 'success') {
+                     this.file_url = data.data
+                     this.file_name = file_name
+                   }
+                 })
+         
+             },
+           }
+         });
+         
+      </script>
+   </body>
