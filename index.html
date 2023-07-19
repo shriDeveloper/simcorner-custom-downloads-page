@@ -24,7 +24,14 @@
                </a>
             </header>
             <main>
-               <div class="container">
+               <div class="container" v-if="isLoaderOn">
+                <div class="row text-center">
+                  <div class="col-md-12" style="display: flex;justify-content: center;">
+                     <img src="https://cdn.jsdelivr.net/gh/shriDeveloper/sellkite-digital-downloads-demo/roller-loading-transparent.gif">
+                  </div>
+                </div>
+             </div>
+               <div class="container" v-if="!isLoaderOn">
                   <div class="row justify-content-center" v-if="file_name">
                      <div class="col-md-6">
                         <div class="card" style="border: 0px;" >
@@ -40,9 +47,6 @@
                         </div>
                      </div>
                   </div>
-                  <div v-else>
-                    <p class="text-center">File is no longer available for download</p>
-                  </div>
                </div>
             </main>
             <footer class="p-5 my-5 text-muted">
@@ -57,6 +61,7 @@
          var app = new Vue({
            el: '#app',
            data: {
+             isLoaderOn:false,
              header_background_color: "",
              header_font_color: "",
              page_background_color: "",
@@ -81,7 +86,10 @@
          
            },
            mounted() {
-         
+
+              // start the loader over here
+             this.isLoaderOn = true;
+              
              const params = new Proxy(new URLSearchParams(window.location.search), {
                get: (searchParams, prop) => searchParams.get(prop),
              });
@@ -128,7 +136,8 @@
          
                    this.getOrderDownloads(store_url, file_name)
          
-         
+                  this.isLoaderOn = false;
+              
                  }
                });
          
